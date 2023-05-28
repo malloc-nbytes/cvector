@@ -18,16 +18,26 @@ void mult_by_two(void *element) {
   *value *= 2;
 }
 
+void sum(void *a, void *b) {
+  int *ax = (int *)a;
+  int *bx = (int *)b;
+  *ax = *ax + *bx;
+}
+
 int main(void) {
 
   Cvector cv = cvector_create_with_cap(100);
 
-  cvector_push(&cv, CV_COMPOUND_LITERAL(2));
-  cvector_push(&cv, CV_COMPOUND_LITERAL(4));
-  cvector_push(&cv, CV_COMPOUND_LITERAL(3));
-  cvector_push(&cv, CV_COMPOUND_LITERAL(1));
+  cvector_push(&cv, CVWRAP(2));
+  cvector_push(&cv, CVWRAP(4));
+  cvector_push(&cv, CVWRAP(3));
+  cvector_push(&cv, CVWRAP(1));
 
-  CVECTOR_PRINT(&cv, int, "%d");
+  Cvector map = cvector_map(&cv, mult_by_two);
+
+  void *s = cvector_fold_right(&map, sum);
+
+  printf("%d\n", *(int *)s);
 
   return 0;
 }

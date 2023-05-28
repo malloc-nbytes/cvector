@@ -52,6 +52,20 @@ void *cvector_peek(Cvector *cv) {
   return cv->data[cv->len - 1];
 }
 
+void *cvector_fold_right(Cvector *cv, void (*func)(void *, void *)) {
+  assert(cv->len >= 2);
+  void *a = NULL, *b = NULL;
+  for (size_t i = 0; i < cv->len - 1; i++) {
+    if (!i) {
+      a = cv->data[i];
+    }
+    b = cv->data[i + 1];
+    func(a, b);
+  }
+  cvector_free(cv);
+  return a;
+}
+
 void cvector_rev(Cvector *cv) {
   int start = 0, end = cv->len - 1;
   while (start < end) {

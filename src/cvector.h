@@ -20,6 +20,9 @@
 #define CV_COMPOUND_LITERAL(x) ((void *)&(typeof(x)){x})
 #define EXPLICIT_CV_COMPOUND_LITERAL(x, type) ((void *)&(type){x})
 
+#define CVWRAP(x) CV_COMPOUND_LITERAL(x)
+#define ECVWRAP(x, type) EXPLICIT_CV_COMPOUND_LITERAL(x, type)
+
 typedef struct {
   void **data;
   size_t len, cap;
@@ -27,6 +30,8 @@ typedef struct {
 
 Cvector cvector_create();
 Cvector cvector_create_with_cap(size_t cap);
+
+// Consumes the vector.
 Cvector cvector_map(Cvector *cv, void (*map_func)(void *));
 
 void cvector_push(Cvector *cv, void *data);
@@ -38,6 +43,9 @@ void cvector_free(Cvector *cv);
 void *cvector_pop(Cvector *cv);
 void *cvector_at(Cvector *cv, size_t idx);
 void *cvector_peek(Cvector *cv);
+
+// Consumes the vector.
+void *cvector_fold_right(Cvector *cv, void (*func)(void *, void *));
 
 size_t cvector_len(Cvector *cv);
 size_t cvector_cap(Cvector *cv);
