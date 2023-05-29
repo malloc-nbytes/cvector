@@ -4,17 +4,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define CVQSORT_COMPARFUNC_CAST(x, type) *((type *)*((void**)(x)))
+#define CVQSORT_COMPARFUNC_CAST(x, type) *((type *)*((void **)(x)))
 
-#define CVECTOR_PRINT(cv, type, format)                         \
-  do {                                                          \
-    for (size_t i = 0; i < (cv)->len; i++) {                    \
-      if (strcmp(#type, "char *") == 0) {                       \
-        printf("%s\n", (char *)((cv)->data[i]));                \
-      } else {                                                  \
-        printf(#format "\n", *((type*)((cv)->data[i])));        \
-      }                                                         \
-    }                                                           \
+#define CVECTOR_PRINT(cv, type, format)                                        \
+  do {                                                                         \
+    for (size_t i = 0; i < (cv)->len; i++) {                                   \
+      if (strcmp(#type, "char *") == 0) {                                      \
+        printf("%s\n", (char *)((cv)->data[i]));                               \
+      } else {                                                                 \
+        printf(#format "\n", *((type *)((cv)->data[i])));                      \
+      }                                                                        \
+    }                                                                          \
   } while (0)
 
 #define CV_COMPOUND_LITERAL(x) ((void *)&(typeof(x)){x})
@@ -26,6 +26,8 @@
 typedef struct {
   void **data;
   size_t len, cap;
+  int *allocd;
+  size_t allocd_len, allocd_cap;
 } Cvector;
 
 Cvector cvector_create();
@@ -35,8 +37,9 @@ Cvector cvector_create_with_cap(size_t cap);
 Cvector cvector_map(Cvector *cv, void (*map_func)(void *));
 
 void cvector_push(Cvector *cv, void *data);
+void cvector_pushvar(Cvector *cv, void *data, size_t sz);
 void cvector_rev(Cvector *cv);
-void cvector_qsort(Cvector *cv, int(*compar)(const void *, const void *));
+void cvector_qsort(Cvector *cv, int (*compar)(const void *, const void *));
 void cvector_clear(Cvector *cv);
 void cvector_free(Cvector *cv);
 

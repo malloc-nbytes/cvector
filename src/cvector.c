@@ -30,6 +30,8 @@ Cvector cvector_create_with_cap(size_t cap) {
   cv.len = 0;
   cv.cap = cap;
   cv.data = (void **)s_malloc(sizeof(void *) * cap);
+  cv.allocd = NULL;
+  cv.allocd_len = cv.allocd_cap = 0;
   return cv;
 }
 
@@ -37,6 +39,8 @@ Cvector cvector_create() {
   Cvector cv;
   cv.data = NULL;
   cv.len = cv.cap = 0;
+  cv.allocd = NULL;
+  cv.allocd_len = cv.allocd_cap = 0;
   return cv;
 }
 
@@ -48,11 +52,21 @@ void cvector_push(Cvector *cv, void *data) {
   cv->data[cv->len++] = data;
 }
 
-void *cvector_peek(Cvector *cv) {
-  return cv->data[cv->len - 1];
+void cvector_pushvar(Cvector *cv, void *data, size_t sz) {
+  void *copy = s_malloc(sz);
+  memcpy(copy, data, sz);
+  cvector_push(cv, copy);
+  if (cv->allocd_len >= cv->allocd_cap) {
+    cv->allocd_cap = (cv->allocd_cap == 0) ? 1 : cv->allocd_cap * 2;
+    cv->allocd = (int *)s_realloc(cv->allocd, sizeof(int) * cv->allocd_cap);
+  }
+  cv->allocd[cv->allocd_len++] = cv->len - 1;
 }
 
+void *cvector_peek(Cvector *cv) { return cv->data[cv->len - 1]; }
+
 void *cvector_fold_right(Cvector *cv, void (*func)(void *, void *)) {
+  assert(0 && "todo");
   assert(cv->len >= 2);
   void *a = NULL, *b = NULL;
   for (size_t i = 0; i < cv->len - 1; i++) {
@@ -77,11 +91,12 @@ void cvector_rev(Cvector *cv) {
   }
 }
 
-void cvector_qsort(Cvector *cv, int(*compar)(const void *, const void *)) {
-  qsort(cv->data, cv->len, sizeof(void*), compar);
+void cvector_qsort(Cvector *cv, int (*compar)(const void *, const void *)) {
+  qsort(cv->data, cv->len, sizeof(void *), compar);
 }
 
 Cvector cvector_map(Cvector *cv, void (*map_func)(void *)) {
+  assert(0 && "todo");
   Cvector mapped = cvector_create();
   for (size_t i = 0; i < cv->len; i++) {
     void *elem = cv->data[i];
@@ -93,6 +108,7 @@ Cvector cvector_map(Cvector *cv, void (*map_func)(void *)) {
 }
 
 void *cvector_pop(Cvector *cv) {
+  assert(0 && "todo");
   if (!cv->len) {
     return NULL;
   }
@@ -108,23 +124,25 @@ void *cvector_at(Cvector *cv, size_t idx) {
   return cv->data[idx];
 }
 
-void cvector_clear(Cvector *cv) {
-  cv->len = 0;
-}
+void cvector_clear(Cvector *cv) { cv->len = 0; }
 
-size_t cvector_len(Cvector *cv) {
-  return cv->len;
-}
+size_t cvector_len(Cvector *cv) { return cv->len; }
 
-size_t cvector_cap(Cvector *cv) {
-  return cv->cap;
-}
+size_t cvector_cap(Cvector *cv) { return cv->cap; }
 
-int cvector_empty(Cvector *cv) {
-  return !cv->len;
-}
+int cvector_empty(Cvector *cv) { return !cv->len; }
 
 void cvector_free(Cvector *cv) {
-  cv->len = cv->cap = 0;
-  free(cv->data);
+  for (size_t i = 0; i < cv->allocd_len; i++) {
+    free(cv->data[cv->allocd[i]]);
+  }
+  cv->len = cv->cap = cv->allocd_len = cv->allocd_cap = 0;
+  if (cv->data) {
+    free(cv->data);
+  }
+  if (cv->allocd) {
+    free(cv->allocd);
+  }
+  cv->data = NULL;
+  cv->allocd = NULL;
 }
