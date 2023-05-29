@@ -17,17 +17,19 @@
     }                                                                          \
   } while (0)
 
-#define CV_COMPOUND_LITERAL(x) ((void *)&(typeof(x)){x})
 #define EXPLICIT_CV_COMPOUND_LITERAL(x, type) ((void *)&(type){x})
 
+#define CV_COMPOUND_LITERAL(x) ((void *)&(typeof(x)){x})
 #define CVWRAP(x) CV_COMPOUND_LITERAL(x)
 #define ECVWRAP(x, type) EXPLICIT_CV_COMPOUND_LITERAL(x, type)
 
 typedef struct {
   void **data;
-  size_t len, cap, elem_size;
+  size_t len;
+  size_t cap;
+  size_t elem_size;
   int *allocd;
-  size_t allocd_len, allocd_cap;
+  size_t allocd_cap;
 } Cvector;
 
 Cvector cvector_create(size_t elem_size);
@@ -37,13 +39,13 @@ Cvector cvector_with_capacity(size_t cap, size_t elem_size);
 Cvector cvector_map(Cvector *cv, void (*map_func)(void *));
 
 void cvector_push(Cvector *cv, void *data);
-void cvector_pushvar(Cvector *cv, void *data, size_t elem_size);
+void cvector_pushdyn(Cvector *cv, void *data);
 void cvector_rev(Cvector *cv);
 void cvector_qsort(Cvector *cv, int (*compar)(const void *, const void *));
 void cvector_clear(Cvector *cv);
 void cvector_free(Cvector *cv);
 
-void *cvector_pop(Cvector *cv);
+void cvector_pop(Cvector *cv);
 void *cvector_at(Cvector *cv, size_t idx);
 void *cvector_peek(Cvector *cv);
 

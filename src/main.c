@@ -14,7 +14,7 @@ int compar(const void *a, const void *b) {
 }
 
 void mult_by_two(void *element) {
-  int *value = (int *)element;
+  float *value = (float *)element;
   *value *= 2;
 }
 
@@ -28,23 +28,17 @@ int main(void) {
 
   Cvector cv = cvector_create(sizeof(int));
 
-  cvector_push(&cv, CVWRAP(1));
-  cvector_push(&cv, CVWRAP(2));
-  cvector_push(&cv, CVWRAP(3));
+  cvector_push(&cv, CVWRAP(10));
+  cvector_push(&cv, CVWRAP(9));
+  cvector_push(&cv, CVWRAP(8));
 
-  for (int i = 4; i < 10; i++) {
-    cvector_pushvar(&cv, &i, sizeof(int));
+  for (int i = 7; i >= 0; i--) {
+    cvector_pushdyn(&cv, &i);
   }
 
-  cvector_rev(&cv);
+  CVECTOR_PRINT(&cv, int, "%d");
 
-  Cvector mapped = cvector_map(&cv, mult_by_two);
-
-  CVECTOR_PRINT(&mapped, int, "%d");
-
-  // CVECTOR_PRINT(&cv, int, "%d");
-  // cvector_free(&cv);
-  cvector_free(&mapped);
+  cvector_free(&cv);
 
   return 0;
 }
