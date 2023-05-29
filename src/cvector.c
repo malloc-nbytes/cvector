@@ -25,8 +25,18 @@ void *s_realloc(void *ptr, size_t nbytes) {
   return p;
 }
 
-Cvector cvector_create_with_cap(size_t cap) {
+int is_allocd(Cvector *cv, size_t idx) {
+  for (size_t i = 0; i < cv->allocd_len; i++) {
+    if (cv->allocd[i] == idx) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+Cvector cvector_with_capacity(size_t cap, size_t elem_size) {
   Cvector cv;
+  cv.elem_size = elem_size;
   cv.len = 0;
   cv.cap = cap;
   cv.data = (void **)s_malloc(sizeof(void *) * cap);
@@ -35,9 +45,10 @@ Cvector cvector_create_with_cap(size_t cap) {
   return cv;
 }
 
-Cvector cvector_create() {
+Cvector cvector_create(size_t elem_size) {
   Cvector cv;
   cv.data = NULL;
+  cv.elem_size = elem_size;
   cv.len = cv.cap = 0;
   cv.allocd = NULL;
   cv.allocd_len = cv.allocd_cap = 0;
@@ -52,9 +63,9 @@ void cvector_push(Cvector *cv, void *data) {
   cv->data[cv->len++] = data;
 }
 
-void cvector_pushvar(Cvector *cv, void *data, size_t sz) {
-  void *copy = s_malloc(sz);
-  memcpy(copy, data, sz);
+void cvector_pushvar(Cvector *cv, void *data, size_t elem_size) {
+  void *copy = s_malloc(elem_size);
+  memcpy(copy, data, elem_size);
   cvector_push(cv, copy);
   if (cv->allocd_len >= cv->allocd_cap) {
     cv->allocd_cap = (cv->allocd_cap == 0) ? 1 : cv->allocd_cap * 2;
@@ -66,7 +77,6 @@ void cvector_pushvar(Cvector *cv, void *data, size_t sz) {
 void *cvector_peek(Cvector *cv) { return cv->data[cv->len - 1]; }
 
 void *cvector_fold_right(Cvector *cv, void (*func)(void *, void *)) {
-  assert(0 && "todo");
   assert(cv->len >= 2);
   void *a = NULL, *b = NULL;
   for (size_t i = 0; i < cv->len - 1; i++) {
@@ -86,6 +96,16 @@ void cvector_rev(Cvector *cv) {
     void *tmp = cv->data[start];
     cv->data[start] = cv->data[end];
     cv->data[end] = tmp;
+
+    // The allocated indices get mixed up, resort them.
+    for (size_t i = 0; i < cv->allocd_len; i++) {
+      if (start == cv->allocd[i]) {
+        cv->allocd[i] = end;
+      } else if (end == cv->allocd[i]) {
+        cv->allocd[i] = start;
+      }
+    }
+
     start += 1;
     end -= 1;
   }
@@ -96,12 +116,15 @@ void cvector_qsort(Cvector *cv, int (*compar)(const void *, const void *)) {
 }
 
 Cvector cvector_map(Cvector *cv, void (*map_func)(void *)) {
-  assert(0 && "todo");
-  Cvector mapped = cvector_create();
+  Cvector mapped = cvector_create(cv->elem_size);
   for (size_t i = 0; i < cv->len; i++) {
     void *elem = cv->data[i];
     map_func(elem);
-    cvector_push(&mapped, cv->data[i]);
+    if (is_allocd(cv, i)) {
+      cvector_pushvar(&mapped, cv->data[i], cv->elem_size);
+    } else {
+      cvector_push(&mapped, cv->data[i]);
+    }
   }
   cvector_free(cv);
   return mapped;

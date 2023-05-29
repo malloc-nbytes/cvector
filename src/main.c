@@ -26,7 +26,7 @@ void sum(void *a, void *b) {
 
 int main(void) {
 
-  Cvector cv = cvector_create();
+  Cvector cv = cvector_create(sizeof(int));
 
   cvector_push(&cv, CVWRAP(1));
   cvector_push(&cv, CVWRAP(2));
@@ -36,9 +36,15 @@ int main(void) {
     cvector_pushvar(&cv, &i, sizeof(int));
   }
 
-  CVECTOR_PRINT(&cv, int, "%d");
+  cvector_rev(&cv);
 
-  cvector_free(&cv);
+  Cvector mapped = cvector_map(&cv, mult_by_two);
+
+  CVECTOR_PRINT(&mapped, int, "%d");
+
+  // CVECTOR_PRINT(&cv, int, "%d");
+  // cvector_free(&cv);
+  cvector_free(&mapped);
 
   return 0;
 }
