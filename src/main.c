@@ -13,16 +13,9 @@ int compar(const void *a, const void *b) {
   }
 }
 
-void mult_by_two(void *element) {
-  float *value = (float *)element;
-  *value *= 2;
-}
+void mult_by_two(void *elem) { *(int *)elem *= 2; }
 
-void sum(void *a, void *b) {
-  int *ax = (int *)a;
-  int *bx = (int *)b;
-  *ax = *ax + *bx;
-}
+void sum(void *a, void *b) { *(int *)a = *(int *)a + *(int *)b; }
 
 int main(void) {
 
@@ -36,9 +29,9 @@ int main(void) {
     cvector_pushdyn(&cv, &i);
   }
 
-  CVECTOR_PRINT(&cv, int, "%d");
+  int s = *(int *)cvector_fold_right(&cv, sum);
 
-  cvector_free(&cv);
+  printf("%d\n", s);
 
   return 0;
 }
