@@ -1,5 +1,5 @@
 # cvector
-## Remake of my now privated `vector` repository now using `void **` to hold data to reduce repetative code.
+## A growable array capable of holding various datatypes.
 
 ## Functions
 #### * Create a new `Cvector`.
@@ -315,5 +315,3 @@ int compar(const void *a, const void *b) {
   }
 }
 ```
-
-
