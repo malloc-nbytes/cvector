@@ -79,9 +79,9 @@ cvector_free(&mapped);
 ```
 Output:
 ```
-"0""
-"2""
-"4""
+"0"
+"2"
+"4"
 ```
 Another example:
 ```c
