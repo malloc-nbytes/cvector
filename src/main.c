@@ -25,11 +25,11 @@ int main(void) {
     cvector_pushdyn(&cv, &i);
   }
 
-  void *res = cvector_fold_right(&cv, sum);
+  int s = *(int *)cvector_fold_right(&cv, sum);
+  printf("here: %d\n", s);
+  printf("here: %d\n", *(int *)cvector_at(&cv, 0));
 
-  free(&res);
-
-  printf("%d\n", *(int *)res);
+  cvector_free(&cv);
 
   return 0;
 }

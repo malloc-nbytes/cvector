@@ -96,24 +96,15 @@ void cvector_pushdyn(Cvector *cv, void *data) {
   cv->allocd[cv->len - 1] = 1;
 }
 
-// Consumes the `Cvector`.
+// Places the result at index 0 of the vector.
 // Example `func`:
 // void sum(void *a, void *b) { *(int *)a = *(int *)a + *(int *)b; }
 void *cvector_fold_right(Cvector *cv, void (*func)(void *, void *)) {
-  assert(0 && "broken");
-  assert(cv->len >= 2);
-  void *a = NULL, *b = NULL;
+  assert(cv->len > 2);
   for (size_t i = 0; i < cv->len - 1; i++) {
-    if (!i) {
-      a = cv->data[i];
-    }
-    b = cv->data[i + 1];
-    func(a, b);
+    func(cv->data[cv->len - 2 - i], cv->data[cv->len - 1 - i]);
   }
-  void *res = s_malloc(cv->elem_size);
-  memcpy(res, a, cv->elem_size);
-  cvector_free(cv);
-  return res;
+  return cv->data[0];
 }
 
 void cvector_rev(Cvector *cv) {
@@ -147,8 +138,6 @@ int compar(const void *a, const void *b) {
 }
 */
 void cvector_qsort(Cvector *cv, int (*compar)(const void *, const void *)) {
-  TODO("make the allocd array hold pointers to allocated items, not indices",
-       stderr);
   for (size_t i = 1; i < cv->len; i++) {
     if (cv->allocd[i] != cv->allocd[0]) {
       PANIC("ERROR: all elements must either be all stack-allocated or all "

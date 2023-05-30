@@ -187,10 +187,11 @@ Output:
 "4"
 ```
 
-#### * Apply result = func(cv_1, cv_2, cv_3, ..., cv_n-1). Consumes the vector. Currently broken.
+#### * Apply cv[0] = func(cv[0], cv[1], cv[2], ..., cv[n-1]).
 ```c
 void *cvector_fold_right(Cvector *cv, void (*func)(void *, void *));
 ```
+It will place the result at the first index of `cv` and also returns a pointer to it.
 Example:
 ```c
 void sum(void *a, void *b) { 
@@ -201,8 +202,10 @@ Cvector cs = cvector_create(sizeof(int));
 for (int i = 0; i < 5; i++) {
   cvector_pushdyn(&cv, &i);
 }
-int s = *(int *)cvector_fold_right(&cv, sum);
-printf("%d\n", s);
+printf("%d", *(int *)cvector_fold_right(&cv, sum));
+// or
+int res = cvector_fold_right(&cv, sum);
+printf("%d", res);
 ```
 Output:
 ```
