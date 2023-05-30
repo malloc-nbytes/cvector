@@ -159,7 +159,7 @@ Cvector cvector_map(Cvector *cv, void (*map_func)(void *)) {
   return mapped;
 }
 
-void cvector_foreach(Cvector *cv, void (foreach_func)(void *)) {
+void cvector_foreach(Cvector *cv, void (foreach_func)(const void *)) {
   for (size_t i = 0; i < cv->len; i++) {
     foreach_func(cv->data[i]);
   }

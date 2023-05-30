@@ -30,5 +30,12 @@ int main(void) {
 
   cvector_foreach(&cv, point_print);
 
+  for (int i = 5; i < 10; i++) {
+    struct Point tmp = point_create(i, i + 1);
+    cvector_pushdyn(&cv, &tmp);
+  }
+
+  cvector_foreach(&cv, point_print);
+
   return 0;
 }

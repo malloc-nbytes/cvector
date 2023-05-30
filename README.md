@@ -118,8 +118,7 @@ Hxllx wxrld!
 Fxx Bxr Bxz
 ```
 
-#### * Apply a function for each element.
-Apply an immutable function to each element.
+#### * Apply an immutable function for each element.
 ```c
 void cvector_foreach(Cvector *cv, void (foreach_func)(const void *));
 ```
@@ -151,11 +150,25 @@ cvector_push(&cv, &p1);
 cvector_push(&cv, &p2);
 
 cvector_foreach(&cv, point_print);
+
+for (int i = 5; i < 10; i++) {
+  struct Point tmp = point_create(i, i + 1);
+  cvector_pushdyn(&cv, &tmp);
+}
+
+cvector_foreach(&cv, point_print);
 ```
 Output:
 ```
 x: 1, y: 2
 x: 3, y: 4
+x: 1, y: 2
+x: 3, y: 4
+x: 5, y: 6
+x: 6, y: 7
+x: 7, y: 8
+x: 8, y: 9
+x: 9, y: 10
 ```
 
 Calling `cvector_free()` on `cv` is no longer needed but is still needed for `mapped`.
