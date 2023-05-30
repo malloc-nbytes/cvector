@@ -159,7 +159,15 @@ Cvector cvector_map(Cvector *cv, void (*map_func)(void *)) {
   return mapped;
 }
 
-void *cvector_peek(Cvector *cv) { return cv->data[cv->len - 1]; }
+void cvector_foreach(Cvector *cv, void (foreach_func)(void *)) {
+  for (size_t i = 0; i < cv->len; i++) {
+    foreach_func(cv->data[i]);
+  }
+}
+
+void *cvector_peek(Cvector *cv) {
+  return cv->data[cv->len - 1];
+}
 
 void try_free_individual_elem(Cvector *cv, size_t idx) {
   if (cv->allocated[idx]) {

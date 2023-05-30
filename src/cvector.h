@@ -19,8 +19,8 @@
 
 #define EXPLICIT_CV_COMPOUND_LITERAL(x, type) ((void *)&(type){x})
 #define CV_COMPOUND_LITERAL(x) ((void *)&(typeof(x)){x})
-#define CVWRAP(x) CV_COMPOUND_LITERAL(x)
-#define ECVWRAP(x, type) EXPLICIT_CV_COMPOUND_LITERAL(x, type)
+#define CVCONST(x) CV_COMPOUND_LITERAL(x)
+#define ECVCONST(x, type) EXPLICIT_CV_COMPOUND_LITERAL(x, type)
 
 typedef struct {
   void **data;
@@ -41,6 +41,9 @@ Cvector cvector_with_capacity(size_t cap, size_t elem_size);
 // Example `map_func`:
 //  void mult_by_two(void *elem) { *(int *)elem *= 2; }
 Cvector cvector_map(Cvector *cv, void (*map_func)(void *));
+
+// Apply an immutable function to each element.
+void cvector_foreach(Cvector *cv, void (foreach_func)(const void *));
 
 // Push a reference to a variable or push
 // a compound literal using one of the following:

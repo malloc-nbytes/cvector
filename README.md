@@ -26,15 +26,15 @@ void cvector_push(Cvector *cv, void *data);
 ```
 Or push a compound literal using one of the following:
 
-`CVWRAP` `ECVWRAP` `CV_COMPOUND_LITERAL` `EXPLICIT_CV_COMPOUND_LITERAL`
+`CVCONST` `ECVCONST` `CV_COMPOUND_LITERAL` `EXPLICIT_CV_COMPOUND_LITERAL`
 
 Example:
 ```c
 Cvector cs = cvector_create(sizeof(float));
 float a = 0.f;
 cvector_push(&cv, &a);
-cvector_push(&cv, CVWRAP(1.f));
-cvector_push(&cv, ECVWRAP(2.0, float));
+cvector_push(&cv, CVCONST(1.f));
+cvector_push(&cv, ECVCONST(2.0, float));
 ```
 
 #### * Push a value that will be dynamically allocated.
@@ -70,9 +70,9 @@ void mult_by_two(void *elem) {
 }
 
 Cvector cs = cvector_create(sizeof(int));
-cvector_push(&cv, CVWRAP(0));
-cvector_push(&cv, CVWRAP(1));
-cvector_push(&cv, CVWRAP(2));
+cvector_push(&cv, CVCONST(0));
+cvector_push(&cv, CVCONST(1));
+cvector_push(&cv, CVCONST(2));
 Cvector mapped = cvector_map(&cv, mult_by_two);
 CVECTOR_PRINT(&mapped, int, "%d");
 cvector_free(&mapped);
@@ -97,9 +97,9 @@ void find_vowels(void *elem) {
 
 Cvector cv = cvector_create(sizeof(char *));
 
-vector_push(&cv, CVWRAP("This is a test"));
-cvector_push(&cv, CVWRAP("Hello world!"));
-cvector_push(&cv, CVWRAP("Foo Bar Baz"));
+vector_push(&cv, CVCONST("This is a test"));
+cvector_push(&cv, CVCONST("Hello world!"));
+cvector_push(&cv, CVCONST("Foo Bar Baz"));
 
 CVECTOR_PRINT(&cv, char *, "%s");
 
@@ -116,6 +116,46 @@ Foo Bar Baz
 Thxs xs x txst
 Hxllx wxrld!
 Fxx Bxr Bxz
+```
+
+#### * Apply a function for each element.
+Apply an immutable function to each element.
+```c
+void cvector_foreach(Cvector *cv, void (foreach_func)(const void *));
+```
+Example:
+```c
+struct Point {
+  int x;
+  int y;
+};
+
+struct Point point_create(int x, int y) {
+  struct Point p;
+  p.x = x;
+  p.y = y;
+  return p;
+}
+
+void point_print(const void *ptr) {
+  struct Point *p = (struct Point *)ptr;
+  printf("x: %d, y: %d\n", p->x, p->y);
+}
+
+Cvector cv = cvector_create(sizeof(struct Point));
+
+struct Point p1 = point_create(1, 2);
+struct Point p2 = point_create(3, 4);
+
+cvector_push(&cv, &p1);
+cvector_push(&cv, &p2);
+
+cvector_foreach(&cv, point_print);
+```
+Output:
+```
+x: 1, y: 2
+x: 3, y: 4
 ```
 
 Calling `cvector_free()` on `cv` is no longer needed but is still needed for `mapped`.
@@ -274,8 +314,8 @@ Create a compound literal.
 |-----------------------------------------|-----------------------------------------|
 | `CV_COMPOUND_LITERAL(x, type)`          | `((void *)&(typeof(x)){x})`             |
 | `EXPLICIT_CV_COMPOUND_LITERAL(x, type)` | `((void *)&(type){x})`                  |
-| `CVWRAP(x)`                             | `CV_COMPOUND_LITERAL(x)`                |
-| `ECVWRAP(x, type)`                      | `EXPLICIT_CV_COMPOUND_LITERAL(x, type)` |
+| `CVCONST(x)`                            | `CV_COMPOUND_LITERAL(x)`                |
+| `ECVCONST(x, type)`                     | `EXPLICIT_CV_COMPOUND_LITERAL(x, type)` |
 | `CVQSORT_COMPARFUNC_CAST(x, type)`      | `*((type *)*((void **)(x)))`            |
 | `CVECTOR_PRINT(cv, type, format)`       | Try to print the `Cvector`              |
 
@@ -285,20 +325,20 @@ Create a compound literal.
 CVECTOR_PRINT(&cv, int, "%d");
 ```
 
-* `CVWRAP(x)`
+* `CVCONST(x)`
 ```c
 Cvector cv = cvector_create();
-cvector_push(&cv, CVWRAP(1));
-cvector_push(&cv, CVWRAP(2));
-cvector_push(&cv, CVWRAP(3));
+cvector_push(&cv, CVCONST(1));
+cvector_push(&cv, CVCONST(2));
+cvector_push(&cv, CVCONST(3));
 ```
 
-* `ECVWRAP(x)`
+* `ECVCONST(x)`
 ```c
 Cvector cv = cvector_create();
-cvector_push(&cv, ECVWRAP(1.0, double));
-cvector_push(&cv, ECVWRAP(2.0, double));
-cvector_push(&cv, ECVWRAP(3.0, double));
+cvector_push(&cv, ECVCONST(1.0, double));
+cvector_push(&cv, ECVCONST(2.0, double));
+cvector_push(&cv, ECVCONST(3.0, double));
 ```
 
 * `CVQSORT_COMPARFUNC_CAST(x, type)`

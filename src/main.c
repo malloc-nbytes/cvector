@@ -1,31 +1,34 @@
 #include "cvector.h"
 #include <stdio.h>
 
-void find_vowels(void *elem) {
-  char *s = (char *)elem;
-  for (int i = 0; s[i] != '\0'; i++) {
-    char c = s[i];
-    if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
-      s[i] = 'x';
-    }
-  }
+struct Point {
+  int x;
+  int y;
+};
+
+struct Point point_create(int x, int y) {
+  struct Point p;
+  p.x = x;
+  p.y = y;
+  return p;
+}
+
+void point_print(const void *ptr) {
+  struct Point *p = (struct Point *)ptr;
+  printf("x: %d, y: %d\n", p->x, p->y);
 }
 
 int main(void) {
 
-  Cvector cv = cvector_create(sizeof(char *));
+  Cvector cv = cvector_create(sizeof(struct Point));
 
-  cvector_push(&cv, CVWRAP("This is a test"));
-  cvector_push(&cv, CVWRAP("Hello world!"));
-  cvector_push(&cv, CVWRAP("Foo Bar Baz"));
+  struct Point p1 = point_create(1, 2);
+  struct Point p2 = point_create(3, 4);
 
-  CVECTOR_PRINT(&cv, char *, "%s");
+  cvector_push(&cv, &p1);
+  cvector_push(&cv, &p2);
 
-  Cvector mapped = cvector_map(&cv, find_vowels);
-
-  CVECTOR_PRINT(&mapped, char *, "%s");
-
-  cvector_free(&mapped);
+  cvector_foreach(&cv, point_print);
 
   return 0;
 }
