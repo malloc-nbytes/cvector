@@ -21,13 +21,11 @@ int main(void) {
 
   Cvector cv = cvector_create(sizeof(int));
 
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 500; i++) {
     cvector_pushdyn(&cv, &i);
   }
 
-  int s = *(int *)cvector_fold_right(&cv, sum);
-  printf("here: %d\n", s);
-  printf("here: %d\n", *(int *)cvector_at(&cv, 0));
+  CVECTOR_PRINT(&cv, int, "%d");
 
   cvector_free(&cv);
 

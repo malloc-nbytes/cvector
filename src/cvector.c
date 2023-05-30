@@ -48,11 +48,9 @@ Cvector cvector_with_capacity(size_t cap, size_t elem_size) {
   cv.cap = cap;
 
   cv.data = (void **)s_malloc(sizeof(void *) * cap);
-  cv.allocd = (int *)s_malloc(sizeof(int) * cap);
+  cv.allocated = (int *)s_malloc(sizeof(int) * cap);
 
-  cv.allocd_cap = cap;
-
-  memset(cv.allocd, 0, sizeof(cv.allocd[0]) * cap);
+  memset(cv.allocated, 0, sizeof(cv.allocated[0]) * cap);
 
   return cv;
 }
@@ -64,8 +62,7 @@ Cvector cvector_create(size_t elem_size) {
   cv.elem_size = elem_size;
   cv.len = cv.cap = 0;
 
-  cv.allocd = NULL;
-  cv.allocd_cap = 0;
+  cv.allocated = NULL;
 
   return cv;
 }
@@ -73,27 +70,26 @@ Cvector cvector_create(size_t elem_size) {
 void cvector_push(Cvector *cv, void *data) {
   if (cv->len >= cv->cap) {
     cv->cap = (cv->cap == 0) ? 1 : cv->cap * 2;
-    cv->allocd_cap = cv->cap;
 
     cv->data = (void **)s_realloc(cv->data, sizeof(void *) * cv->cap);
-    cv->allocd = (int *)s_realloc(cv->allocd, sizeof(int) * cv->allocd_cap);
+    cv->allocated = (int *)s_realloc(cv->allocated, sizeof(int) * cv->cap);
 
-    size_t new_elements = (cv->allocd_cap - cv->cap) * sizeof(int);
-    memset(cv->allocd + cv->cap, 0, new_elements);
+    size_t new_elements = (cv->cap - cv->cap) * sizeof(int);
+    memset(cv->allocated + cv->cap, 0, new_elements);
   }
   cv->data[cv->len++] = data;
-  cv->allocd[cv->len - 1] = 0;
+  cv->allocated[cv->len - 1] = 0;
 }
 
 void cvector_pushdyn(Cvector *cv, void *data) {
   void *copy = s_malloc(cv->elem_size);
   memcpy(copy, data, cv->elem_size);
   cvector_push(cv, copy);
-  while (cv->allocd_cap < cv->len) {
-    cv->allocd_cap = (cv->allocd_cap == 0) ? 1 : cv->allocd_cap * 2;
-    cv->allocd = (int *)s_realloc(cv->allocd, sizeof(int) * cv->allocd_cap);
+  if (cv->cap < cv->len) {
+    cv->cap = (cv->cap == 0) ? 1 : cv->cap * 2;
+    cv->allocated = (int *)s_realloc(cv->allocated, sizeof(int) * cv->cap);
   }
-  cv->allocd[cv->len - 1] = 1;
+  cv->allocated[cv->len - 1] = 1;
 }
 
 // Places the result at index 0 of the vector.
@@ -114,9 +110,9 @@ void cvector_rev(Cvector *cv) {
     cv->data[start] = cv->data[end];
     cv->data[end] = tmp;
 
-    int atmp = cv->allocd[start];
-    cv->allocd[start] = cv->allocd[end];
-    cv->allocd[end] = atmp;
+    int atmp = cv->allocated[start];
+    cv->allocated[start] = cv->allocated[end];
+    cv->allocated[end] = atmp;
 
     start += 1;
     end -= 1;
@@ -139,7 +135,7 @@ int compar(const void *a, const void *b) {
 */
 void cvector_qsort(Cvector *cv, int (*compar)(const void *, const void *)) {
   for (size_t i = 1; i < cv->len; i++) {
-    if (cv->allocd[i] != cv->allocd[0]) {
+    if (cv->allocated[i] != cv->allocated[0]) {
       PANIC("ERROR: all elements must either be all stack-allocated or all "
             "dynamically allocated",
             stderr);
@@ -156,8 +152,8 @@ Cvector cvector_map(Cvector *cv, void (*map_func)(void *)) {
   for (size_t i = 0; i < cv->len; i++) {
     void *elem = cv->data[i];
     map_func(elem);
-    cv->allocd[i] ? cvector_pushdyn(&mapped, cv->data[i])
-                  : cvector_push(&mapped, cv->data[i]);
+    cv->allocated[i] ? cvector_pushdyn(&mapped, cv->data[i])
+                     : cvector_push(&mapped, cv->data[i]);
   }
   cvector_free(cv);
   return mapped;
@@ -166,9 +162,9 @@ Cvector cvector_map(Cvector *cv, void (*map_func)(void *)) {
 void *cvector_peek(Cvector *cv) { return cv->data[cv->len - 1]; }
 
 void try_free_individual_elem(Cvector *cv, size_t idx) {
-  if (cv->allocd[idx]) {
+  if (cv->allocated[idx]) {
     free(cv->data[idx]);
-    cv->allocd[idx] = 0;
+    cv->allocated[idx] = 0;
   }
 }
 
@@ -197,17 +193,17 @@ int cvector_empty(Cvector *cv) { return !cv->len; }
 
 void cvector_free(Cvector *cv) {
   for (size_t i = 0; i < cv->len; i++) {
-    if (cv->allocd[i]) {
+    if (cv->allocated[i]) {
       free(cv->data[i]);
     }
   }
-  cv->len = cv->cap = cv->allocd_cap = 0;
+  cv->len = cv->cap = 0;
   if (cv->data) {
     free(cv->data);
   }
-  if (cv->allocd) {
-    free(cv->allocd);
+  if (cv->allocated) {
+    free(cv->allocated);
   }
   cv->data = NULL;
-  cv->allocd = NULL;
+  cv->allocated = NULL;
 }

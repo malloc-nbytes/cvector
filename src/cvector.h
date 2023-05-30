@@ -27,8 +27,7 @@ typedef struct {
   size_t len;
   size_t cap;
   size_t elem_size;
-  int *allocd; // TODO: make this pointers instead of booleans.
-  size_t allocd_cap; // TODO: remove this and just use cap.
+  int *allocated;
 } Cvector;
 
 // Create a new `Cvector`.
@@ -81,9 +80,9 @@ void *cvector_at(Cvector *cv, size_t idx);
 // Get the element in the last position.
 void *cvector_peek(Cvector *cv);
 
-// Apply func(cv_1, cv_2, cv_3, ..., cv_n-1).
-// Consumes the vector.
-// Example `func`:
+// Apply cv[0] = func(cv[0], cv[1], cv[2], ..., cv[n-1]).
+// It will place the result at the first index of cv and also returns a pointer
+// to it. Example `func`:
 //  void sum(void *a, void *b) { *(int *)a = *(int *)a + *(int *)b; }
 void *cvector_fold_right(Cvector *cv, void (*func)(void *, void *));
 
