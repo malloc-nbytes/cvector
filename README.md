@@ -151,17 +151,22 @@ cvector_push(&cv, &p2);
 
 cvector_foreach(&cv, point_print);
 
+printf("----------\n");
+
 for (int i = 5; i < 10; i++) {
   struct Point tmp = point_create(i, i + 1);
   cvector_pushdyn(&cv, &tmp);
 }
 
 cvector_foreach(&cv, point_print);
+
+cvector_free(&cv);
 ```
 Output:
 ```
 x: 1, y: 2
 x: 3, y: 4
+----------
 x: 1, y: 2
 x: 3, y: 4
 x: 5, y: 6
