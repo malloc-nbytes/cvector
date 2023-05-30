@@ -1,33 +1,31 @@
 #include "cvector.h"
 #include <stdio.h>
 
-int compar(const void *a, const void *b) {
-  int n1 = CVQSORT_COMPARFUNC_CAST(a, int);
-  int n2 = CVQSORT_COMPARFUNC_CAST(b, int);
-  if (n1 < n2) {
-    return -1;
-  } else if (n1 > n2) {
-    return 1;
-  } else {
-    return 0;
+void find_vowels(void *elem) {
+  char *s = (char *)elem;
+  for (int i = 0; s[i] != '\0'; i++) {
+    char c = s[i];
+    if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
+      s[i] = 'x';
+    }
   }
 }
 
-void mult_by_two(void *elem) { *(int *)elem *= 2; }
-
-void sum(void *a, void *b) { *(int *)a = *(int *)a + *(int *)b; }
-
 int main(void) {
 
-  Cvector cv = cvector_create(sizeof(int));
+  Cvector cv = cvector_create(sizeof(char *));
 
-  for (int i = 0; i < 500; i++) {
-    cvector_pushdyn(&cv, &i);
-  }
+  cvector_push(&cv, CVWRAP("This is a test"));
+  cvector_push(&cv, CVWRAP("Hello world!"));
+  cvector_push(&cv, CVWRAP("Foo Bar Baz"));
 
-  CVECTOR_PRINT(&cv, int, "%d");
+  CVECTOR_PRINT(&cv, char *, "%s");
 
-  cvector_free(&cv);
+  Cvector mapped = cvector_map(&cv, find_vowels);
+
+  CVECTOR_PRINT(&mapped, char *, "%s");
+
+  cvector_free(&mapped);
 
   return 0;
 }

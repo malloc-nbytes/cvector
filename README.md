@@ -83,6 +83,41 @@ Output:
 "2""
 "4""
 ```
+Another example:
+```c
+void find_vowels(void *elem) {
+  char *s = (char *)elem;
+  for (int i = 0; s[i] != '\0'; i++) {
+    char c = s[i];
+    if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
+      s[i] = 'x';
+    }
+  }
+}
+
+Cvector cv = cvector_create(sizeof(char *));
+
+vector_push(&cv, CVWRAP("This is a test"));
+cvector_push(&cv, CVWRAP("Hello world!"));
+cvector_push(&cv, CVWRAP("Foo Bar Baz"));
+
+CVECTOR_PRINT(&cv, char *, "%s");
+
+vector mapped = cvector_map(&cv, find_vowels);
+CVECTOR_PRINT(&mapped, char *, "%s");
+
+cvector_free(&mapped);
+```
+Output:
+```
+This is a test
+Hello world!
+Foo Bar Baz
+Thxs xs x txst
+Hxllx wxrld!
+Fxx Bxr Bxz
+```
+
 Calling `cvector_free()` on `cv` is no longer needed but is still needed for `mapped`.
 
 #### * Reverse the `Cvector`.
