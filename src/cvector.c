@@ -20,7 +20,7 @@
           __LINE__, __FUNCTION__);                                             \
   exit(1);
 
-void *s_malloc(size_t nbytes) {
+void *_cvector_malloc(size_t nbytes) {
   void *p = malloc(nbytes);
   if (!p) {
     fprintf(stderr, "ERROR: failed to allocate %zu bytes. Reason: %s\n", nbytes,
@@ -30,7 +30,7 @@ void *s_malloc(size_t nbytes) {
   return p;
 }
 
-void *s_realloc(void *ptr, size_t nbytes) {
+void *_cvector_realloc(void *ptr, size_t nbytes) {
   void *p = realloc(ptr, nbytes);
   if (!p) {
     fprintf(stderr, "ERROR: failed to reallocate %zu bytes. Reason: %s\n",
@@ -47,8 +47,8 @@ Cvector cvector_with_capacity(size_t cap, size_t elem_size) {
   cv.len = 0;
   cv.cap = cap;
 
-  cv.data = (void **)s_malloc(sizeof(void *) * cap);
-  cv.allocated = (int *)s_malloc(sizeof(int) * cap);
+  cv.data = (void **)_cvector_malloc(sizeof(void *) * cap);
+  cv.allocated = (int *)_cvector_malloc(sizeof(int) * cap);
 
   memset(cv.allocated, 0, sizeof(cv.allocated[0]) * cap);
 
@@ -71,8 +71,8 @@ void cvector_push(Cvector *cv, void *data) {
   if (cv->len >= cv->cap) {
     cv->cap = (cv->cap == 0) ? 1 : cv->cap * 2;
 
-    cv->data = (void **)s_realloc(cv->data, sizeof(void *) * cv->cap);
-    cv->allocated = (int *)s_realloc(cv->allocated, sizeof(int) * cv->cap);
+    cv->data = (void **)_cvector_realloc(cv->data, sizeof(void *) * cv->cap);
+    cv->allocated = (int *)_cvector_realloc(cv->allocated, sizeof(int) * cv->cap);
 
     size_t new_elements = (cv->cap - cv->cap) * sizeof(int);
     memset(cv->allocated + cv->cap, 0, new_elements);
@@ -82,12 +82,12 @@ void cvector_push(Cvector *cv, void *data) {
 }
 
 void cvector_pushdyn(Cvector *cv, void *data) {
-  void *copy = s_malloc(cv->elem_size);
+  void *copy = _cvector_malloc(cv->elem_size);
   memcpy(copy, data, cv->elem_size);
   cvector_push(cv, copy);
   if (cv->cap < cv->len) {
     cv->cap = (cv->cap == 0) ? 1 : cv->cap * 2;
-    cv->allocated = (int *)s_realloc(cv->allocated, sizeof(int) * cv->cap);
+    cv->allocated = (int *)_cvector_realloc(cv->allocated, sizeof(int) * cv->cap);
   }
   cv->allocated[cv->len - 1] = 1;
 }
