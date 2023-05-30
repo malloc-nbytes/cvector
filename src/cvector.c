@@ -100,6 +100,7 @@ void cvector_pushdyn(Cvector *cv, void *data) {
 // Example `func`:
 // void sum(void *a, void *b) { *(int *)a = *(int *)a + *(int *)b; }
 void *cvector_fold_right(Cvector *cv, void (*func)(void *, void *)) {
+  assert(0 && "broken");
   assert(cv->len >= 2);
   void *a = NULL, *b = NULL;
   for (size_t i = 0; i < cv->len - 1; i++) {
@@ -109,8 +110,10 @@ void *cvector_fold_right(Cvector *cv, void (*func)(void *, void *)) {
     b = cv->data[i + 1];
     func(a, b);
   }
+  void *res = s_malloc(cv->elem_size);
+  memcpy(res, a, cv->elem_size);
   cvector_free(cv);
-  return a;
+  return res;
 }
 
 void cvector_rev(Cvector *cv) {
@@ -197,7 +200,7 @@ void *cvector_at(Cvector *cv, size_t idx) {
 
 void cvector_clear(Cvector *cv) { cvector_free(cv); }
 
-size_t cvector_len(Cvector *cv) { return cv->len / cv->elem_size; }
+size_t cvector_len(Cvector *cv) { return cv->len; }
 
 size_t cvector_cap(Cvector *cv) { return cv->cap; }
 
