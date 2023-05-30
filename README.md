@@ -294,7 +294,8 @@ Cvector cs = cvector_create(sizeof(int));
 for (int i = 0; i < 5; i++) {
   cvector_pushdyn(&cv, &i);
 }
-printf("%d", *(int *)cvector_fold_right(&cv, sum));
+cvector_fold_right(&cv, sum);
+printf("%d\n", *(int *)cvector_at(&cv, 0));
 // or
 int res = cvector_fold_right(&cv, sum);
 printf("%d", res);
