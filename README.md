@@ -117,6 +117,7 @@ Thxs xs x txst
 Hxllx wxrld!
 Fxx Bxr Bxz
 ```
+Calling `cvector_free()` on `cv` is no longer needed but is still needed for `mapped`.
 
 #### * Apply an immutable function for each element.
 ```c
@@ -175,8 +176,6 @@ x: 7, y: 8
 x: 8, y: 9
 x: 9, y: 10
 ```
-
-Calling `cvector_free()` on `cv` is no longer needed but is still needed for `mapped`.
 
 #### * Reverse the `Cvector`.
 ```c
