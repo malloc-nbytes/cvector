@@ -118,6 +118,14 @@ Cvector cvector_map(Cvector *cv, void (*map_func)(void *)) {
   return mapped;
 }
 
+Cvector cvector_copy(Cvector *cv) {
+  Cvector copy = cvector_create(cv->elem_size);
+  for (size_t i = 0; i < cv->len; i++) {
+    cvector_push(&copy, cvector_at(cv, i));
+  }
+  return copy;
+}
+
 void cvector_rev(Cvector *cv) {
   int start = 0, end = cv->len - 1;
   char tmp[cv->elem_size];
@@ -129,6 +137,88 @@ void cvector_rev(Cvector *cv) {
     start += 1;
     end -= 1;
   }
+}
+
+int cvector_deep_eq(Cvector *cv1, Cvector *cv2) {
+  if (cv1->len != cv2->len) {
+    return 0;
+  }
+  for (size_t i = 0; i < cv1->len; i++) {
+    void *elem1 = cvector_at(cv1, i);
+    void *elem2 = cvector_at(cv2, i);
+    if (memcmp(elem1, elem2, cv1->elem_size) != 0) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+int cvector_shallow_eq(Cvector *cv1, Cvector *cv2) {
+  if (cv1->len != cv2->len) {
+    return 0;
+  }
+  for (size_t i = 0; i < cv1->len; i++) {
+    void *elem1 = cvector_at(cv1, i);
+    for (size_t j = 0; j < cv2->len; j++) {
+      void *elem2 = cvector_at(cv2, j);
+      if (memcmp(elem1, elem2, cv1->elem_size) == 0) {
+        break;
+      }
+      if (j == cv2->len - 1) {
+        return 0;
+      }
+    }
+  }
+  return 1;
+}
+
+void cvector_inplace_filter(Cvector *cv, int (*inplace_filter_func)(const void *)) {
+  for (size_t i = 0; i < cv->len; i++) {
+    if (!inplace_filter_func(cvector_at(cv, i))) {
+      cvector_remove(cv, i);
+    }
+  }
+}
+
+Cvector cvector_filter(Cvector *cv, int (*filter_func)(const void *)) {
+  Cvector filtered = cvector_with_capacity(cv->cap, cv->elem_size);
+  for (size_t i = 0; i < cv->len; i++) {
+    if (filter_func(cvector_at(cv, i))) {
+      cvector_push(&filtered, cvector_at(cv, i));
+    }
+  }
+  cvector_free(cv);
+  return filtered;
+}
+
+void cvector_extend(Cvector *dest, Cvector *release) {
+  for (size_t i = 0; i < release->len; i++) {
+    cvector_push(dest, cvector_at(release, i));
+  }
+}
+
+int _mem_matches(Cvector *cv, void *elem1, void *elem2) {
+  return memcmp(elem1, elem2, cv->elem_size) == 0 ?
+    1 : 0;
+}
+
+int cvector_count(Cvector *cv, void *elem) {
+  int count = 0;
+  for (size_t i = 0; i < cv->len; i++) {
+    if (_mem_matches(cv, cvector_at(cv, i), elem)) {
+      count += 1;
+    }
+  }
+  return count;
+}
+
+int cvector_contains(Cvector *cv, void *elem) {
+  for (size_t i = 0; i < cv->len; i++) {
+    if (_mem_matches(cv, cvector_at(cv, i), elem)) {
+      return 1;
+    }
+  }
+  return 0;
 }
 
 void cvector_free(Cvector *cv) {

@@ -2,22 +2,23 @@
 #include <stdio.h>
 #include <assert.h>
 
-int compar(const void *a, const void *b) {
-  return *(int *)a - *(int *)b;
-}
-
 int main(void) {
-  Cvector cv = CVCREATE(int);
+  Cvector cv1 = CVCREATE(int);
+  Cvector cv2 = CVCREATE(int);
 
-  for (int i = 5; i >= 0; i--) {
-    cvector_push(&cv, &i);
+  for (int i = 0; i < 10; i++) {
+    cvector_push(&cv1, &i);
+    cvector_push(&cv2, &i);
   }
 
-  CVPRINT(cv, int, "%d");
-  cvector_rev(&cv);
-  CVPRINT(cv, int, "%d");
+  for (int i = 9; i >= 0; i--) {
+    cvector_push(&cv2, &i);
+  }
 
-  cvector_free(&cv);
+  printf("%d\n", cvector_shallow_eq(&cv1, &cv2));
+
+  cvector_free(&cv1);
+  cvector_free(&cv2);
 
   return 0;
 }

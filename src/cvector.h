@@ -3,13 +3,14 @@
 
 #include <stdlib.h>
 
+// (ﾉಥДಥ)ﾉ ︵┻━┻･/
 #define CV_COMPOUND_LITERAL(x) ((void *)&(typeof(x)){(x)})
 #define CV_EXPLICIT_COMPOUND_LITERAL(x, type) ((void *)&(type){(x)})
-#define CVWRAP(x) CV_COMPOUND_LITERAL(x)
-#define ECVWRAP(x, type) CV_EXPLICIT_COMPOUND_LITERAL(x, type)
+#define CVCONST(x) CV_COMPOUND_LITERAL(x)
+#define ECVCONST(x, type) CV_EXPLICIT_COMPOUND_LITERAL(x, type)
 
 #define CVCREATE(type) cvector_create(sizeof(type))
-#define CVWITH_CAPACITY(cap, type) cvector_with_capacity(cap, sizeof(type))
+#define CVWITHCAP(cap, type) cvector_with_capacity(cap, sizeof(type))
 
 #define CVPRINT(cv, type, format) do { \
   for (size_t i = 0; i < cv.len; i++) { \
@@ -90,5 +91,50 @@ size_t cvector_cap(Cvector *cv);
 
 // Check to see if the `Cvector` is empty.
 int cvector_empty(Cvector *cv);
+
+// Check to see if the `Cvector` contains an element.
+int cvector_contains(Cvector *cv, void *elem);
+
+// Count the number of occurrences of an element.
+int cvector_count(Cvector *cv, void *elem);
+
+// Combine two vectors into one.
+void cvector_extend(Cvector *dest, Cvector *release);
+
+// Filter the vector in place.
+void cvector_inplace_filter(Cvector *cv, int (*inplace_filter_func)(const void *));
+
+// Filter the vector and return a new vector.
+Cvector cvector_filter(Cvector *cv, int (*filter_func)(const void *));
+
+// Check to see if both vectors have the same values somewhere in memory.
+// v1 = [1, 2, 3]
+// v2 = [1, 2, 3]
+// v1 == v2 => true
+// v1 = [1, 2, 3]
+// v2 = [1, 3, 2]
+// v1 == v2 => true
+// v1 = [1, 2, 3]
+// v2 = [1, 3, 2, 4]
+// v1 == v2 => false
+int cvector_shallow_eq(Cvector *cv1, Cvector *cv2);
+
+// Check to see if every element (in order) in the vectors are equal.
+// v1 = [1, 2, 3]
+// v2 = [1, 2, 3]
+// v1 == v2 => true, reason: same values, same order.
+// v1 = [1, 2, 3]
+// v2 = [1, 3, 2]
+// v1 == v2 => false, reason: same values, different order.
+// v1 = [1, 2, 3]
+// v2 = [1, 3, 2, 4]
+// v1 == v2 => false, reason: |v1| != |v2|.
+int cvector_deep_eq(Cvector *cv1, Cvector *cv2);
+
+// Return a new vector with the same elements as the original vector.
+Cvector cvector_copy(Cvector *cv);
+
+// cvector_insert: Insert an element at a specific index in the vector.
+// cvector_index: Return the index of the first occurrence of a given element in the vector.
 
 #endif // CVECTOR_H
