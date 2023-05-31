@@ -39,6 +39,7 @@ void cvector_remove(Cvector *cv, size_t index);
 //  void mult_by_two(void *elem) { *(int *)elem *= 2; }
 Cvector cvector_map(Cvector *cv, void (*map_func)(void *));
 
+// Set the length of the cvector. `len` <= |`cv`|
 void cvector_set_len(Cvector *cv, size_t len);
 
 // Apply an immutable function to each element.

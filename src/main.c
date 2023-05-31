@@ -1,24 +1,22 @@
 #include "cvector.h"
 #include <stdio.h>
-#include <assert.h>
+
+void elem_double(void *ptr) {
+  int *elem = (int *)ptr;
+  *elem *= 2;
+}
 
 int main(void) {
-  Cvector cv1 = CVCREATE(int);
-  Cvector cv2 = CVCREATE(int);
+  Cvector cv = cvector_create(sizeof(int));
 
-  for (int i = 0; i < 10; i++) {
-    cvector_push(&cv1, &i);
-    cvector_push(&cv2, &i);
+  for (int i = 0; i < 5; i++) {
+    cvector_push(&cv, &i);
   }
 
-  for (int i = 9; i >= 0; i--) {
-    cvector_push(&cv2, &i);
-  }
+  Cvector mapped = cvector_map(&cv, elem_double);
 
-  printf("%d\n", cvector_shallow_eq(&cv1, &cv2));
+  CVPRINT(mapped, int, "%d");
 
-  cvector_free(&cv1);
-  cvector_free(&cv2);
-
+  cvector_free(&mapped);
   return 0;
 }

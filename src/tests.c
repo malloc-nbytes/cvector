@@ -1,9 +1,8 @@
 #include "cvector.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
-#include "cvector.h"
 
 void test_cvector_create() {
   Cvector cv = cvector_create(sizeof(int));
@@ -104,9 +103,7 @@ void test_cvector_foreach() {
   cvector_push(&cv, &b);
   cvector_push(&cv, &c);
   int sum = 0;
-  void sum_func(const void *elem) {
-    sum += *(int *)elem;
-  }
+  void sum_func(const void *elem) { sum += *(int *)elem; }
   cvector_foreach(&cv, sum_func);
   assert(sum == 6);
   cvector_free(&cv);
@@ -139,9 +136,7 @@ void test_cvector_fold_right() {
   cvector_push(&cv, &b);
   cvector_push(&cv, &c);
   cvector_push(&cv, &d);
-  void sum_func(void *acc, void *elem) {
-    *(int *)acc += *(int *)elem;
-  }
+  void sum_func(void *acc, void *elem) { *(int *)acc += *(int *)elem; }
   cvector_fold_right(&cv, sum_func);
   assert(cv.len == 1);
   assert(*(int *)cvector_at(&cv, 0) == 10);
@@ -156,9 +151,7 @@ void test_cvector_qsort() {
   cvector_push(&cv, &b);
   cvector_push(&cv, &c);
   cvector_push(&cv, &d);
-  int cmp(const void *a, const void *b) {
-    return *(int *)a - *(int *)b;
-  }
+  int cmp(const void *a, const void *b) { return *(int *)a - *(int *)b; }
   cvector_qsort(&cv, cmp);
   assert(cv.len == 4);
   assert(*(int *)cvector_at(&cv, 0) == 1);
@@ -175,9 +168,7 @@ void test_cvector_map() {
   cvector_push(&cv, &a);
   cvector_push(&cv, &b);
   cvector_push(&cv, &c);
-  void double_func(void *elem) {
-    *(int *)elem *= 2;
-  }
+  void double_func(void *elem) { *(int *)elem *= 2; }
   Cvector mapped = cvector_map(&cv, double_func);
   assert(cv.len == 0);
   assert(mapped.len == 3);
