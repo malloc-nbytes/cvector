@@ -3,6 +3,20 @@
 
 #include <stdlib.h>
 
+#define CV_COMPOUND_LITERAL(x) ((void *)&(typeof(x)){(x)})
+#define CV_EXPLICIT_COMPOUND_LITERAL(x, type) ((void *)&(type){(x)})
+#define CVWRAP(x) CV_COMPOUND_LITERAL(x)
+#define ECVWRAP(x, type) CV_EXPLICIT_COMPOUND_LITERAL(x, type)
+
+#define CVCREATE(type) cvector_create(sizeof(type))
+#define CVWITH_CAPACITY(cap, type) cvector_with_capacity(cap, sizeof(type))
+
+#define CVPRINT(cv, type, format) do { \
+  for (size_t i = 0; i < cv.len; i++) { \
+    printf(format "\n", ((type *)cv.data)[i]); \
+  } \
+} while (0)
+
 typedef struct {
   void *data;
   size_t len;
@@ -14,7 +28,9 @@ typedef struct {
 Cvector cvector_create(size_t elem_size);
 
 // Create a new `Cvector` with a capacity.
-/* Cvector cvector_with_capacity(size_t cap, size_t elem_size); */
+Cvector cvector_with_capacity(size_t cap, size_t elem_size);
+
+void cvector_remove(Cvector *cv, size_t index);
 
 // Create a new `Cvector` by applying a function
 // to each element. This function consumes the vector.
@@ -36,16 +52,15 @@ void cvector_foreach(Cvector *cv, void(foreach_func)(const void *));
 void cvector_push(Cvector *cv, void *data);
 
 // Reverse the `Cvector`.
-/* void cvector_rev(Cvector *cv); */
+void cvector_rev(Cvector *cv);
 
 // Apply qsort() on the `Cvector`. Currently broken.
 // Example `compar`:
 //  void sum(void *a, void *b) { *(int *)a = *(int *)a + *(int *)b; }
-/* void cvector_qsort(Cvector *cv, int (*compar)(const void *, const void *));
- */
+void cvector_qsort(Cvector *cv, int (*compar)(const void *, const void *));
 
 // Clear the `Cvector`.
-/* void cvector_clear(Cvector *cv); */
+void cvector_clear(Cvector *cv);
 
 // Free the `Cvector`.
 void cvector_free(Cvector *cv);
@@ -67,6 +82,8 @@ void cvector_fold_right(Cvector *cv, void (*func)(void *, void *));
 
 // Get the length.
 size_t cvector_len(Cvector *cv);
+
+size_t cvector_elem_size(Cvector *cv);
 
 // Get the capacity.
 size_t cvector_cap(Cvector *cv);
