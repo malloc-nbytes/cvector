@@ -2,22 +2,19 @@
 #include <stdio.h>
 #include <assert.h>
 
-void elem_double(void *ptr) {
-  int *elem = (int *)ptr;
-  *elem *= 2;
+void print(const void *ptr) {
+  printf("%s\n", (char *)ptr);
 }
 
 int main(void) {
-  Cvector cv = cvector_create(sizeof(int));
+  Cvector cv = cvector_create(sizeof(char *));
 
-  for (int i = 0; i < 5; i++) {
-    cvector_push(&cv, &i);
-  }
+  char s1[] = "Hello World!";
 
-  Cvector mapped = cvector_map(&cv, elem_double);
+  cvector_push(&cv, &s1);
 
-  CVPRINT(mapped, int, "%d");
+  cvector_foreach(&cv, print);
 
-  cvector_free(&mapped);
+  cvector_free(&cv);
   return 0;
 }

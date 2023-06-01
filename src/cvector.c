@@ -61,7 +61,7 @@ void cvector_push(Cvector *cv, void *data) {
     cv->data = _cvector_realloc(cv->data, cv->cap * cv->elem_size);
   }
   memcpy(cv->data + cv->len * cv->elem_size, data, cv->elem_size);
-  cv->len++;
+  cv->len += 1;
 }
 
 void *cvector_peek(Cvector *cv) {
