@@ -1,5 +1,6 @@
 #include "cvector.h"
 #include <stdio.h>
+#include <assert.h>
 
 void elem_double(void *ptr) {
   int *elem = (int *)ptr;
