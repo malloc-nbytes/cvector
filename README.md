@@ -1,4 +1,8 @@
 # cvector
+
+<img src="https://img.shields.io/badge/C-A8B9CC?logo=c&logoColor=black&style=for-the-badge" height="40" alt="c logo"  />
+<img width="12" />
+
 ## A generic, growable array.
 
 ## Functions
