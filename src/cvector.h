@@ -12,11 +12,11 @@
 #define CVCREATE(type) cvector_create(sizeof(type))
 #define CVWITHCAP(cap, type) cvector_with_capacity(cap, sizeof(type))
 
-#define CVPRINT(cv, type, format) do { \
-  for (size_t i = 0; i < cv.len; i++) { \
-    printf(format "\n", ((type *)cv.data)[i]); \
-  } \
-} while (0)
+#define CVPRINT(cv, type, format) do {                  \
+    for (size_t i = 0; i < cv.len; i++) {               \
+      printf(format "\n", ((type *)cv.data)[i]);        \
+    }                                                   \
+  } while (0)
 
 typedef struct {
   void *data;
