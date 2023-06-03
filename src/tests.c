@@ -321,6 +321,8 @@ void test_cvector_shallow_eq() {
   cvector_push(&cv2, &a);
   cvector_push(&cv2, &b);
   assert(cvector_shallow_eq(&cv1, &cv2));
+  cvector_rev(&cv2);
+  assert(cvector_shallow_eq(&cv1, &cv2));
   cvector_push(&cv2, &c);
   assert(!cvector_shallow_eq(&cv1, &cv2));
   cvector_free(&cv1);
@@ -337,7 +339,7 @@ void test_cvector_deep_eq() {
   cvector_push(&cv2, &a);
   cvector_push(&cv2, &b);
   assert(cvector_deep_eq(&cv1, &cv2));
-  cvector_push(&cv2, &c);
+  cvector_rev(&cv2);
   assert(!cvector_deep_eq(&cv1, &cv2));
   cvector_free(&cv1);
   cvector_free(&cv2);
