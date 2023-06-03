@@ -136,7 +136,7 @@ int cvector_deep_eq(Cvector *cv1, Cvector *cv2);
 // Return a new vector with the same elements as the original vector.
 Cvector cvector_copy(Cvector *cv);
 
-// cvector_insert: Insert an element at a specific index in the vector.
-// cvector_index: Return the index of the first occurrence of a given element in the vector.
+// Return the index of the first occurrence of a given element in the vector.
+int cvector_index(Cvector *cv, void *data);
 
 #endif // CVECTOR_H

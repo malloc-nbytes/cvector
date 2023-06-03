@@ -2,18 +2,15 @@
 #include <stdio.h>
 #include <assert.h>
 
-void print(const void *ptr) {
-  printf("%s\n", (char *)ptr);
-}
-
 int main(void) {
-  Cvector cv = cvector_create(sizeof(char *));
+  Cvector cv = cvector_create(sizeof(int));
 
-  char s1[] = "Hello World!";
+  for (int i = 0; i < 5; i++) {
+    cvector_push(&cv, &i);
+  }
 
-  cvector_push(&cv, &s1);
-
-  cvector_foreach(&cv, print);
+  printf("%d\n", cvector_index(&cv, CVCONST(2)));
+  printf("%d\n", cvector_index(&cv, CVCONST(9)));
 
   cvector_free(&cv);
   return 0;

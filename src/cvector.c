@@ -221,6 +221,15 @@ int cvector_contains(Cvector *cv, void *elem) {
   return 0;
 }
 
+int cvector_index(Cvector *cv, void *data) {
+  for (size_t i = 0; i < cv->len; i++) {
+    if (_mem_matches(cv, cvector_at(cv, i), data)) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 void cvector_free(Cvector *cv) {
   free(cv->data);
   cv->data = NULL;

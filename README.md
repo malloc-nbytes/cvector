@@ -915,6 +915,34 @@ Copy:
 4
 ```
 
+### `cvector_index`
+```c
+int cvector_index(Cvector *cv, void *data);
+```
+Return the index of the first occurrence of a given element in the vector. Returns -1 if not found.
+
+Example:
+```c
+int main(void) {
+  Cvector cv = cvector_create(sizeof(int));
+
+  for (int i = 0; i < 5; i++) {
+    cvector_push(&cv, &i);
+  }
+
+  printf("%d\n", cvector_index(&cv, CVCONST(2)));
+  printf("%d\n", cvector_index(&cv, CVCONST(9)));
+
+  cvector_free(&cv);
+  return 0;
+}
+```
+Output:
+```
+2
+-1
+```
+
 ## Macros
 
 | Macro                | Definition                   |
@@ -1039,4 +1067,3 @@ Output:
 3
 4
 ```
-
