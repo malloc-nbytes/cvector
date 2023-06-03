@@ -46,6 +46,17 @@ Cvector cvector_with_capacity(size_t cap, size_t elem_size) {
   return cv;
 }
 
+void cvector_change(Cvector *cv, int index, void *new_data) {
+  if (index < 0 || index >= cv->len) {
+    CVPANIC("index %d is out of bounds", stderr, index);
+  }
+
+  size_t offset = index * cv->elem_size;
+
+  void *dest = (char *)cv->data + offset;
+  memcpy(dest, new_data, cv->elem_size);
+}
+
 void cvector_remove(Cvector *cv, size_t index) {
   if (index >= cv->len) {
     CVPANIC("index %zu out of bounds", stderr, index);
@@ -81,7 +92,7 @@ void *cvector_at(Cvector *cv, size_t index) {
   return cv->data + index * cv->elem_size;
 }
 
-void cvector_foreach(Cvector *cv, void(foreach_func)(const void *)) {
+void cvector_foreach(Cvector *cv, void (foreach_func)(const void *)) {
   for (size_t i = 0; i < cv->len; i++) {
     foreach_func(cvector_at(cv, i));
   }
@@ -221,9 +232,9 @@ int cvector_contains(Cvector *cv, void *elem) {
   return 0;
 }
 
-int cvector_index(Cvector *cv, void *data) {
+int cvector_index(Cvector *cv, void *elem) {
   for (size_t i = 0; i < cv->len; i++) {
-    if (_mem_matches(cv, cvector_at(cv, i), data)) {
+    if (_mem_matches(cv, cvector_at(cv, i), elem)) {
       return i;
     }
   }

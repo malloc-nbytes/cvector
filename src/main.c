@@ -9,8 +9,13 @@ int main(void) {
     cvector_push(&cv, &i);
   }
 
-  printf("%d\n", cvector_index(&cv, CVCONST(2)));
-  printf("%d\n", cvector_index(&cv, CVCONST(9)));
+  printf("Before:\n");
+  CVPRINT(cv, int, "%d");
+
+  cvector_change(&cv, 2, CVCONST(99));
+
+  printf("After:\n");
+  CVPRINT(cv, int, "%d");
 
   cvector_free(&cv);
   return 0;

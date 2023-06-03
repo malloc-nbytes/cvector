@@ -137,6 +137,9 @@ int cvector_deep_eq(Cvector *cv1, Cvector *cv2);
 Cvector cvector_copy(Cvector *cv);
 
 // Return the index of the first occurrence of a given element in the vector.
-int cvector_index(Cvector *cv, void *data);
+int cvector_index(Cvector *cv, void *elem);
+
+// Change a value at an index.
+void cvector_change(Cvector *cv, int index, void *new_data);
 
 #endif // CVECTOR_H

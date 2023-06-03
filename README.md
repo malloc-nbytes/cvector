@@ -917,7 +917,7 @@ Copy:
 
 ### `cvector_index`
 ```c
-int cvector_index(Cvector *cv, void *data);
+int cvector_index(Cvector *cv, void *elem);
 ```
 Return the index of the first occurrence of a given element in the vector. Returns -1 if not found.
 
@@ -941,6 +941,49 @@ Output:
 ```
 2
 -1
+```
+
+### `cvector_change`
+```c
+void cvector_change(Cvector *cv, int index, void *new_data);
+```
+Change a value at an index.
+
+Example:
+```c
+int main(void) {
+  Cvector cv = cvector_create(sizeof(int));
+
+  for (int i = 0; i < 5; i++) {
+    cvector_push(&cv, &i);
+  }
+
+  printf("Before:\n");
+  CVPRINT(cv, int, "%d");
+
+  cvector_change(&cv, 2, CVCONST(99));
+
+  printf("After:\n");
+  CVPRINT(cv, int, "%d");
+
+  cvector_free(&cv);
+  return 0;
+}
+```
+Output:
+```
+Before:
+0
+1
+2
+3
+4
+After:
+0
+1
+99
+3
+4
 ```
 
 ## Macros
