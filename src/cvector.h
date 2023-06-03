@@ -35,8 +35,6 @@ void cvector_remove(Cvector *cv, size_t index);
 
 // Create a new `Cvector` by applying a function
 // to each element. This function consumes the vector.
-// Example `map_func`:
-//  void mult_by_two(void *elem) { *(int *)elem *= 2; }
 Cvector cvector_map(Cvector *cv, void (*map_func)(void *));
 
 // Set the length of the cvector. `len` <= |`cv`|
@@ -57,8 +55,6 @@ void cvector_push(Cvector *cv, void *data);
 void cvector_rev(Cvector *cv);
 
 // Apply qsort() on the `Cvector`.
-// Example `compar`:
-//  void sum(void *a, void *b) { *(int *)a = *(int *)a + *(int *)b; }
 void cvector_qsort(Cvector *cv, int (*compar)(const void *, const void *));
 
 // Clear the `Cvector`.
@@ -76,10 +72,8 @@ void *cvector_at(Cvector *cv, size_t idx);
 // Get the element in the last position.
 void *cvector_peek(Cvector *cv);
 
-// Apply cv[0] = func(cv[0], cv[1], cv[2], ..., cv[n-1]).
-// It will place the result at the first index of cv and also returns a pointer
-// to it. Example `func`:
-//  void sum(void *a, void *b) { *(int *)a = *(int *)a + *(int *)b; }
+// Apply cv[0] = func(cv[0], cv[1]), func(cv[0], cv[2]), ..., func(cv[0], cv[n-1]).
+// The length of `cv` will be set to 1.
 void cvector_fold_right(Cvector *cv, void (*func)(void *, void *));
 
 // Get the length.
