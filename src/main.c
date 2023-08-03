@@ -2,21 +2,20 @@
 #include <stdio.h>
 #include <assert.h>
 
+void print(void *elem) {
+  printf("%d\n", *(int *)elem);
+}
+
 int main(void) {
-  Cvector cv = cvector_create(sizeof(int));
+  Vec v = vec_new(sizeof(int));
 
-  for (int i = 0; i < 5; i++) {
-    cvector_push(&cv, &i);
-  }
+  vec_push_const(&v, 1);
 
-  printf("Before:\n");
-  CVPRINT(cv, int, "%d");
+  *(int *)vec_at(&v, 0) = 23;
 
-  cvector_change(&cv, 2, CVCONST(99));
+  vec_iter(&v, print);
 
-  printf("After:\n");
-  CVPRINT(cv, int, "%d");
+  vec_free(&v);
 
-  cvector_free(&cv);
   return 0;
 }
