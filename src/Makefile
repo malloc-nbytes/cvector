@@ -1,6 +1,6 @@
 CLFAGS = -Wall -Wextra -pedantic -std=c99
-HEADERS = cvector.h
-OBJECTS = cvector.o
+HEADERS = vec.h
+OBJECTS = vec.o
 
 .PHONY: clean
 

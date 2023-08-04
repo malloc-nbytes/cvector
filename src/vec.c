@@ -1,4 +1,4 @@
-#include "cvector.h"
+#include "vec.h"
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -45,18 +45,19 @@ void *vec_at(Vec *vec, size_t idx) {
   return vec->data + idx * vec->stride;
 }
 
-Vec vec_map(Vec *vec, void *(*mapfunc)(void *elem), size_t stride) {
-  Vec mapvec = vec_new(stride);
+Vec vec_map(Vec *vec, void (*mapfunc)(void *)) {
+  Vec mapped = vec_new(vec->stride);
   for (size_t i = 0; i < vec->len; i++) {
-    vec_push(&mapvec, mapfunc(vec_at(vec, i)));
+    mapfunc(vec_at(vec, i));
+    vec_push(&mapped, vec_at(vec, i));
   }
   vec_free(vec);
-  return mapvec;
+  return mapped;
 }
 
 void vec_iter(Vec *vec, void (*pure_procedure)(void *elem)) {
   for (size_t i = 0; i < vec->len; i++) {
-    closure(vec_at(vec, i));
+    pure_procedure(vec_at(vec, i));
   }
 }
 

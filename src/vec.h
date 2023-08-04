@@ -13,7 +13,7 @@ typedef struct {
 Vec vec_new(size_t stride);
 void vec_push(Vec *vec, void *data);
 void *vec_at(Vec *vec, size_t idx);
-Vec vec_map(Vec *vec, void *(*mapfunc)(void *elem), size_t stride);
+Vec vec_map(Vec *vec, void (*mapfunc)(void *));
 void vec_iter(Vec *vec, void (*pure_procedure)(void *elem));
 void vec_free(Vec *vec);
 
